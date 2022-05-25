@@ -590,18 +590,10 @@ ipcMain.handle(
 
 /// IPC handlers begin here.
 
-ipcMain.handle('checkGameUpdates', async (event, library?: Runner) => {
-  switch (library) {
-    case 'legendary':
-      return LegendaryLibrary.get().listUpdateableGames()
-    case 'gog':
-      return GOGLibrary.get().listUpdateableGames()
-    default:
-      return [
-        ...(await LegendaryLibrary.get().listUpdateableGames()),
-        ...(await GOGLibrary.get().listUpdateableGames())
-      ]
-  }
+ipcMain.handle('checkGameUpdates', async () => {
+  const legendaryUpdates = await LegendaryLibrary.get().listUpdateableGames()
+  const gogUpdates = await GOGLibrary.get().listUpdateableGames()
+  return [...legendaryUpdates, ...gogUpdates]
 })
 
 ipcMain.handle('getEpicGamesStatus', async () => isEpicServiceOffline())
@@ -755,21 +747,11 @@ if (existsSync(installed)) {
   })
 }
 
-ipcMain.handle('refreshLibrary', async (e, fullRefresh, library?: Runner) => {
-  switch (library) {
-    case 'legendary':
-      await LegendaryLibrary.get().getGames('info', fullRefresh)
-      break
-    case 'gog':
-      await GOGLibrary.get().sync()
-      break
-    default:
-      await Promise.allSettled([
-        LegendaryLibrary.get().getGames('info', fullRefresh),
-        GOGLibrary.get().sync()
-      ])
-      break
-  }
+ipcMain.handle('refreshLibrary', async (e, fullRefresh) => {
+  await Promise.allSettled([
+    GOGLibrary.get().sync(),
+    LegendaryLibrary.get().getGames('info', fullRefresh)
+  ])
 })
 
 ipcMain.on('logError', (e, err) => logError(`${err}`, LogPrefix.Frontend))

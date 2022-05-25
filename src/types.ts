@@ -70,7 +70,7 @@ export interface ContextType {
   libraryTopSection: string
   handleLibraryTopSection: (value: LibraryTopSectionOptions) => void
   platform: NodeJS.Platform | string
-  refresh: (library: Runner, checkUpdates?: boolean) => Promise<void>
+  refresh: (checkUpdates?: boolean) => Promise<void>
   refreshLibrary: (options: RefreshOptions) => Promise<void>
   refreshWineVersionInfo: (fetch: boolean) => void
   refreshing: boolean
@@ -267,7 +267,6 @@ export interface Path {
 export type RefreshOptions = {
   checkForUpdates?: boolean
   fullRefresh?: boolean
-  library?: Runner
   runInBackground?: boolean
 }
 
